@@ -1,61 +1,52 @@
 from flask import Flask, request, render_template
+from flask import Response
+import pickle 
 import numpy as np
-import pickle
+import pandas as pd
 
-# Initialize Flask app
-app = Flask(__name__)
+applicaton=Flask(__name__)
+app = applicaton
 
-# Load the saved model and scaler
-ridge_model= pickle.load(open('D:/ML_project/Final_project_ML/Model/ridge.pkl','rb'))
-
-scaler = pickle.load(open('D:/ML_project/Final_project_ML/Model/scaler.pkl','rb'))
+scaler = pickle.load(open(r'D:\ML_project\Final_project_ML\Model\scaler.pkl',"rb"))
+#model = pickle.load(open(r'D:\ML_project\Final_project_ML\Model\predict.pkl', "rb"))
 
 @app.route('/')
 def index():
+    
     return render_template('index.html')
 
-@app.route('/predict', methods=['GET', 'POST'])
+@app.route('/predictdata', methods=['GET','POST'])
 def predict_datapoint():
-    if request.method == 'GET':
-        # If GET request, show the form
-        return render_template('home.html', result=None)
+    result = ""
+    if request.method == 'POST':  
     
-    if request.method == 'POST':
-        try:
-            # Collecting data from form
-            features = [
-                float(request.form['Temperature']),
-                float(request.form['RH']),
-                float(request.form['Ws']),
-                float(request.form['Rain']),
-                float(request.form['FFMC']),
-                float(request.form['DMC']),
-                float(request.form['ISI']),
-                int(request.form['Classes']),
-                int(request.form['Region'])
-            ]
+        temperature = float(request.form.get("temperature"))
+        RH = float(request.form.get("RH"))
+        Ws = float(request.form.get("Ws"))
+        Rain = float(request.form.get("Rain"))
+        FFMC = float(request.form.get("FFMC"))
+        DMC = float(request.form.get("DMC"))
+        DC = float(request.form.get("DC"))
+        ISI = float(request.form.get("ISI"))
+        BUI = float(request.form.get("BUI"))
+        FWI = float(request.form.get("FWI"))
 
-            # Scaling input
-            scaled_features = scaler.transform([features])
+        
+        new_data = scaler.transform([[temperature, RH, Ws, Rain, FFMC, DMC, DC, ISI, BUI, FWI]])
+        prediction = model.predict(new_data)
 
-            # Predict using model
-            prediction = ridge_model.predict(scaled_features)[0]
-            result = "Fire" if prediction == 1 else "Not Fire"
-
-        except KeyError as e:
-            # Handle missing form keys
-            result = f"Error: Missing input for {str(e)}"
-        except ValueError:
-            # Handle invalid form values
-            result = "Error: Invalid input. Please check the entered values."
-        except Exception as e:
-            # General error handler
-            result = f"An error occurred: {str(e)}"
+    
+        if prediction[0] == 1:
+            result = 'FIRE'
+        else:
+            result = 'NO FIRE'
         
 
+        return render_template('singlepredection.html', result=result)
+    else:
+    
+        return render_template("home.html")
 
-        return render_template('single_prediction.html', result=result)
-    
-    
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":  
+    app.run(host="0.0.0.0")
+   
