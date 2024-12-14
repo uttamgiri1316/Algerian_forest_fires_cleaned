@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FWI Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(120deg, #89f7fe, #66a6ff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+        .login {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 350px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #66a6ff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #89f7fe;
+        }
+        h2 {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #555;
+        }
+        /* Add focus effect on input */
+        input:focus {
+            border-color: #66a6ff;
+            outline: none;
+            box-shadow: 0 0 8px rgba(102, 166, 255, 0.5);
+        }
+    </style>
+    <script>
+        function validateForm() {
+            let inputs = document.querySelectorAll('input[type="text"]');
+            for (let input of inputs) {
+                if (input.value === "") {
+                    alert(`Please fill out the ${input.placeholder} field.`);
+                    return false;
+                }
+            }
+            return true;
+        }
+    </script>
+</head>
+<body>
+    <div class="login">
+        <h1>FWI Prediction</h1>
+        <form action="{{ url_for('predict_datapoint')}}" method="post" onsubmit="return validateForm();">
+            <input type="text" name="Temperature" placeholder="Temperature" required /><br>
+            <input type="text" name="RH" placeholder="RH" required /><br>
+            <input type="text" name="Ws" placeholder="Ws" required /><br>
+            <input type="text" name="Rain" placeholder="Rain" required /><br>
+            <input type="text" name="FFMC" placeholder="FFMC" required /><br>
+            <input type="text" name="DMC" placeholder="DMC" required /><br>
+            <input type="text" name="ISI" placeholder="ISI" required /><br>
+            <input type="text" name="Classes" placeholder="Classes" required /><br>
+            <input type="text" name="Region" placeholder="Region" required /><br>
+            <button type="submit" class="btn btn-primary btn-block btn-large">Predict</button>
+        </form>
+       
+    </div>
+</body>
+</html>
